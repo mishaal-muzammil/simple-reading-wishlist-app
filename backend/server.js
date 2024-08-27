@@ -1,21 +1,18 @@
-require('dotenv').config();
 const express = require('express');
-const {connectToDB, connectedClient } = require('./data/database');
+require('dotenv').config();
+const {connectMongoDB } = require('./data/database');
+
 const app = express();
+app.use(express.json());
+
 const router = require('./routes');
+app.use('/api',router);
+
 const port = process.env.PORT || 5000;
-
-app.use('/api', router);
-
 app.listen(port, () => console.log(`Server is Listening on http://localhost:${port}`));
 
-const connectMongoDB = async () => {
-    await connectToDB();
-    console.log('Successfully Connected to MongoDB');
+const connectToDB = async () => {
+    await connectMongoDB();
 }
-connectMongoDB();
-
-
-
-
+connectToDB();
 

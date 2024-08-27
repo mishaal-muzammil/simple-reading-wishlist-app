@@ -1,27 +1,74 @@
 const express = require('express');
-
 const router = express.Router();
+const { connectedClientData } = require('./data/database');
+require('dotenv').config();
+const { ObjectId } = require('mongodb');
 
-//GET /wishlists
-router.get("/wishlists", (req, res ) => { 
-    res.status(200).json({msg: "GET REQ to /api/wishlists"});
+const getContentsCollection = () => {
+    const clientData = connectedClientData();
+    const contents =  clientData.collection('contents');
+    return contents;
+} 
+
+//GET /contents
+router.get("/contents", async (req, res ) => { 
+    try {
+        const contentsCollection = getContentsCollection();
+        const data = await contentsCollection.find({}).toArray();
+        res.status(200).json(data);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Failed to fetch contents', message: error.message });
+    }
 });
 
-//POST /wishlists
-router.post("/wishlists", (req, res ) => { 
-    res.status(201).json({msg: "POST REQ to /api/wishlists"});
+//POST /contents
+router.post("/contents", async (req, res ) => { 
+    try {
+        const contentsCollection = getContentsCollection();
+        const content = req.body;
+        const result = await contentsCollection.insertOne(content);
+        res.status(201).json({content});
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Failed to add content'});
+    }
 });
 
-//PUT /wishlists/:id
-router.put("/wishlists/:id", (req, res ) => { 
-    res.status(200).json({msg: "PUT REQ to /api/wishlists"});
+//PUT /contents/:id
+router.put("/contents/:id", async (req, res ) => { 
+    try {
+        const contentsCollection = getContentsCollection();
+        const { id } = req.params;
+        const updatedContent = req.body;
+        const result = await contentsCollection.updateOne(
+            { _id: new ObjectId(req.params.id) },
+            { $set: updatedContent }
+        );
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ error: 'Content not found' });
+        }
+        res.status(200).json(result);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Failed to update content' });
+    }
 });
 
-//DELETE /wishlists/:id
-router.delete("/wishlists/:id", (req, res ) => { 
-    res.status(200).json({msg: "DELETE REQ to /api/wishlists"});
+//DELETE /contents/:id
+router.delete("/contents/:id", async (req, res ) => { 
+    try {
+            const contentsCollection = getContentsCollection();
+            const result = await contentsCollection.deleteOne({ _id: new ObjectId(req.params.id) });
+            if (result.deletedCount === 0) {
+                return res.status(404).json({ error: 'Content not found' });
+            }
+            res.status(200).json({ message: 'Content deleted', status: true });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ error: 'Failed to delete content' });
+        }
 });
-
 
 module.exports = router;
 
