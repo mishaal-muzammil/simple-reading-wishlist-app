@@ -8,17 +8,17 @@ router.get("/wishlists", (req, res ) => {
 });
 
 //POST /wishlists
-router.get("/wishlists", (req, res ) => { 
+router.post("/wishlists", (req, res ) => { 
     res.status(201).json({msg: "POST REQ to /api/wishlists"});
 });
 
 //PUT /wishlists/:id
-router.get("/wishlists/:id", (req, res ) => { 
+router.put("/wishlists/:id", (req, res ) => { 
     res.status(200).json({msg: "PUT REQ to /api/wishlists"});
 });
 
 //DELETE /wishlists/:id
-router.get("/wishlists/:id", (req, res ) => { 
+router.delete("/wishlists/:id", (req, res ) => { 
     res.status(200).json({msg: "DELETE REQ to /api/wishlists"});
 });
 
