@@ -1,20 +1,30 @@
+// This file contains the API routes for the backend server. It defines the endpoints for
+// interacting with the database.
+
 const express = require('express');
 const router = express.Router();
 const { connectedClientData } = require('./data/database');
 require('dotenv').config();
 const { ObjectId } = require('mongodb');
 
+
+
+// Function to get the required collection from mongodb
 const getContentsCollection = () => {
+    // Get the data from existing database connection
     const clientData = connectedClientData();
     const contents =  clientData.collection('contents');
     return contents;
 } 
 
-//GET /contents
+//GET /contents - Get all contents from database and send to client
 router.get("/contents", async (req, res ) => { 
     try {
         const contentsCollection = getContentsCollection();
         const data = await contentsCollection.find({}).toArray();
+        if (!data) {
+            res.status(404).json({ message: "No contents found" });
+        }
         res.status(200).json(data);
     } catch (error) {
         console.log(error);
@@ -22,7 +32,7 @@ router.get("/contents", async (req, res ) => {
     }
 });
 
-//POST /contents
+//POST /contents - Insert contents from client to database
 router.post("/contents", async (req, res ) => { 
     try {
         const contentsCollection = getContentsCollection();
@@ -35,7 +45,7 @@ router.post("/contents", async (req, res ) => {
     }
 });
 
-//PUT /contents/:id
+//PUT /contents/:id - Update contents from client by id
 router.put("/contents/:id", async (req, res ) => { 
     try {
         const contentsCollection = getContentsCollection();
@@ -55,7 +65,7 @@ router.put("/contents/:id", async (req, res ) => {
     }
 });
 
-//DELETE /contents/:id
+//DELETE /contents/:id - Delete contents from client by id
 router.delete("/contents/:id", async (req, res ) => { 
     try {
             const contentsCollection = getContentsCollection();
