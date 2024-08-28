@@ -1,14 +1,13 @@
-
-import './App.css'
+import ContentsPage from "./pages/ContentsPage";
 
 function App() {
   return (
-    <>
-      <h1 className="text-3xl font-bold underline">
-      Hello world!
-    </h1>
-    </>
-  )
+    <div className=" max-w-[85rem] mx-auto bg-background text-foreground">
+      <main>
+        <ContentsPage />
+      </main>
+    </div>
+  );
 }
 
-export default App
+export default App;

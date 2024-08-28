@@ -6,6 +6,10 @@ const {connectMongoDB } = require('./data/database');
 
 const app = express();
 
+const cors = require('cors');
+app.use(cors());
+app.use.apply;
+
 //A Middleware is used here to convert json data from requests
 app.use(express.json());
 
