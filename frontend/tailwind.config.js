@@ -5,6 +5,9 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        body: ["Poppins"],
+      },
       colors: {
         background: 'var(--background)',
         foreground: 'var(--foreground)',
@@ -28,6 +31,9 @@ export default {
         'deep-secondary': 'var(--deep-secondary)',
       },
     },
+  },
+  variants: {
+    fill: ['hover', 'focus'], 
   },
   plugins: [],
 }
