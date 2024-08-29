@@ -52,8 +52,7 @@ router.post("/contents", async (req, res) => {
             return res.status(400).json({ error: 'Content is empty or required fields are missing' });
         }
         const result = await contentsCollection.insertOne(content);
-        console.log("Inserted content: ", content);
-        return res.status(201).json({ content });
+        return res.status(201).json(content);
     } catch (error) {
         console.log(error);
         return res.status(500).json({ error: 'Failed to add content' });
@@ -102,6 +101,29 @@ router.delete("/contents/:id", async (req, res) => {
     } catch (error) {
         console.log(error);
         return res.status(500).json({ error: 'Failed to delete content' });
+    }
+});
+
+
+//!!! FOR DEV PURPOSES ONLY !!!
+
+//Delete ALL contents from database
+router.get("/contents/deleteAll/:id", async (req, res) => {
+    try {
+        const contentsCollection = getContentsCollection();
+        const result = await contentsCollection.deleteMany({});
+        //Check if the code matches to delete
+        if (req.params.id !== "7777") {
+            return res.status(404).json({ error: 'Action Not Matched, Try Again Properly' });
+        }
+        // Check if the content is deleted
+        if (result.deletedCount > 0) {
+            return res.status(404).json({ error: 'Content not found' });
+        }
+        return res.status(200).json({ message: 'Contents deleted', status: true });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: 'Failed to delete contents' });
     }
 });
 

@@ -30,6 +30,7 @@ export default function AddContentModal({ showModal, setShowModal }) {
       if(res.ok) {
         //const result = await res.json();
         removeContent(formData._id);
+        setShowModal(false);
       }
        else {
         console.error('Failed to delete content');

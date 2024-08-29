@@ -18,7 +18,7 @@
     --secondary-foreground: #ebf0f6;           
     --secondary: #2d2d41; 
     --accent-foreground: #d6d3e6;              
-    --accent: #191923;  
+    --accent: #2b2b42;  
     --destructive: #ff5a5f;         
     --destructive-foreground: #f0f6fb;
     --ring: #60a5fa;               
@@ -29,4 +29,18 @@
   body{
     background-color: var(--background);
   }
+
+
+  /* Contents Masonry Layout */
+.masonry-container {
+  column-count: 3; /* Number of columns */
+  column-gap: 1rem; /* Gap between columns */
+}
+
+.masonry-item {
+  break-inside: avoid;
+  margin-bottom: 1rem; /* Space between items */
+}
+
+
   

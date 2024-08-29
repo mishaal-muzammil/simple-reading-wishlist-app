@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import AddContentModal from "../components/contents/ContentAddModal";
 import ContentCardList from "../components/contents/ContentCardList";
 import ContentStore from "../stores/ContentStore";
+import AddButton from "../components/AddButton";
 
 // Main page of reading wishlist
 // Contains the contents page layout.
@@ -18,7 +19,7 @@ const ContentsPage = () => {
       async function fetchContent() {
         const res = await fetch("http://localhost:5000/api/contents")
           const data = await res.json();
-          setContents(data);
+          data.length > 0 ? setContents(data) : setContents([]);
           console.log("Got Data:"+ data+"--- Loaded Data: "+contents);
       }
       fetchContent();
@@ -64,7 +65,14 @@ const ContentsPage = () => {
           </button>
         </div>
       </div>
-        <ContentCardList contents={contents} />
+      {contents.length < 1 ? (
+      <div className="text-center mt-24">
+        <p className="text-2xl font-regular mb-5">
+          Get started by adding your first wishlist item.
+        </p>
+        <AddButton text={"Start Now"}  isIcon={false}/>
+      </div>
+    ) : <ContentCardList contents={contents} /> }
     </div>
   );
 };
