@@ -45,13 +45,14 @@ router.get("/contents", async (req, res) => {
 router.post("/contents", async (req, res) => {
     try {
         const contentsCollection = getContentsCollection();
-        const content = req.body;
+        let content = req.body;
 
         // Check if the request body has data to be inserted
-        if (!content || Object.keys(content).length < 7) {
-            return res.status(400).json({ error: 'Content is empty or missing required fields' });
+        if (!content || Object.keys(content).length < 4) {
+            return res.status(400).json({ error: 'Content is empty or required fields are missing' });
         }
         const result = await contentsCollection.insertOne(content);
+        console.log("Inserted content: ", content);
         return res.status(201).json({ content });
     } catch (error) {
         console.log(error);

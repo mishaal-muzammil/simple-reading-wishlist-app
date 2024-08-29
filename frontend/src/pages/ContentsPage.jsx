@@ -1,31 +1,53 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddContentModal from "../components/contents/ContentAddModal";
 import ContentCardList from "../components/contents/ContentCardList";
+import ContentStore from "../stores/ContentStore";
 
+// Main page of reading wishlist
+// Contains the contents page layout.
 
 
 const ContentsPage = () => {
 
+    //fetch contents from api endpoint and store in state
+    const contents = ContentStore((state) => state.contents);
+    const setContents = ContentStore((state) => state.setContents);
+
+
+    useEffect(() => {
+      async function fetchContent() {
+        const res = await fetch("http://localhost:5000/api/contents")
+          const data = await res.json();
+          setContents(data);
+          console.log("Got Data:"+ data+"--- Loaded Data: "+contents);
+      }
+      fetchContent();
+    },[setContents]);
 
   const [showModal, setShowModal] = useState(false);
 
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
-    
-    setShowModal(false);
-  };
+
+
+
+
+  //Adding Content logic ends here 
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 mx-auto my-4 sm:my-10">
+
+      {/* Content Add Modal Section */}
+      
+      <AddContentModal showModal={showModal} setShowModal={setShowModal} />
+
       <div className="mb-5 pb-5 flex md:justify-between justify-center items-center border-b">
         <div>
           <h2 className="text-2xl sm:text-3xl font-bold">Reading WishList</h2>
         </div>
 
-        <div className="md:static z-10 fixed bottom-8 right-8">
+        <div className="md:static z-10  fixed bottom-8 right-8">
           <button
           onClick={() => setShowModal(true)}
-            className="group sm:py-4 sm:px-6 py-2 px-3 inline-flex items-center gap-x-2 text-md font-medium rounded-lg border border-accent hover:border-accent shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors duration-200 focus:outline-none focus:bg-gray-50"
+            className="group backdrop-filter backdrop-blur-lg sm:py-4 sm:px-6 py-2 px-3 inline-flex items-center gap-x-2 text-md font-medium rounded-lg border border-accent hover:border-accent shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors duration-200 focus:outline-none focus:bg-gray-50"
             href="#"
           >
             <svg
@@ -42,8 +64,7 @@ const ContentsPage = () => {
           </button>
         </div>
       </div>
-        <ContentCardList />
-        <AddContentModal showModal={showModal} setShowModal={setShowModal} onSubmit={handleFormSubmit} />
+        <ContentCardList contents={contents} />
     </div>
   );
 };
