@@ -18,7 +18,7 @@ app.use('/api',router);
 
 //The server listens to requests on port 5000 or the port mentioned in the .env file.
 const port = process.env.PORT || 5000;
-app.listen(port, () => console.log(`Server is Listening on http://localhost:${port}`));
+app.listen(port, '192.168.8.103', () => console.log(`Server is Listening on http://localhost:${port}`));
 
 //An async function that uses connectMongoDB function to connect to the database.
 const connectToDB = async () => {
