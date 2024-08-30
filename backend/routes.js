@@ -25,13 +25,13 @@ const getContentsCollection = () => {
 router.get("/contents", async (req, res) => {
     try {
         const contentsCollection = getContentsCollection();
-        const data = await contentsCollection.find({}).toArray();
+        const contents = await contentsCollection.find({}).toArray();
 
         // Check if the data is empty
-        if (!data || data.length === 0) {
-            return res.status(404).json({ message: "No contents found" });
+        if (!contents || contents.length === 0) {
+            return res.status(404).json({ message: "No contents found", status: 'dataempty' });
         }
-        return res.status(200).json(data);
+        return res.status(200).json({contents, status: 'datafound'});
 
     } catch (error) {
         console.log(error);
@@ -52,10 +52,14 @@ router.post("/contents", async (req, res) => {
             return res.status(400).json({ error: 'Content is empty or required fields are missing' });
         }
         const result = await contentsCollection.insertOne(content);
-        return res.status(201).json(content);
+        console.log(content);
+        if(result.acknowledged) return res.status(201).json({content, status: 'postsuccess'});
+        
+        else return res.status(500).json({ msg: 'Failed to add content', status: 'postfailed' });
+
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ error: 'Failed to add content' });
+        return res.status(500).json({ error: error, msg:'Failed to add content' });
     }
 });
 
@@ -68,7 +72,7 @@ router.put("/contents/:id", async (req, res) => {
         const updatedContent = req.body;
 
         if (!req.params.id) {
-            return res.status(400).json({ error: 'Content ID is required' });
+            return res.status(400).json({ error:error, msg: 'Content ID is required' });
         }
         const result = await contentsCollection.updateOne(
             { _id: new ObjectId(req.params.id) },
@@ -76,12 +80,12 @@ router.put("/contents/:id", async (req, res) => {
         );
 
         if (result.matchedCount === 0) {
-            return res.status(404).json({ error: 'Content not found' });
+            return res.status(404).json({ error: error, msg: 'Content not found' });
         }
         res.status(200).json({ result, status: true });
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ error: 'Failed to update content' });
+        return res.status(500).json({ error: error, msg: 'Failed to update content' });
     }
 });
 
@@ -91,16 +95,16 @@ router.put("/contents/:id", async (req, res) => {
 router.delete("/contents/:id", async (req, res) => {
     try {
         const contentsCollection = getContentsCollection();
-        const result = await contentsCollection.deleteOne({ _id: new ObjectId(req.params.id) });
+        const content = await contentsCollection.deleteOne({ _id: new ObjectId(req.params.id) });
 
         // Check if the content is deleted
-        if (result.deletedCount === 0) {
-            return res.status(404).json({ error: 'Content not found' });
+        if (content.deletedCount === 0) {
+            return res.status(404).json({ error: 'Content not found' , status: 'deletefailed'});
         }
-        return res.status(200).json({ message: 'Content deleted', status: true });
+        return res.status(200).json({content:content, message: 'Successfully deleted Content', status: 'deletesuccess' });
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ error: 'Failed to delete content' });
+        return res.status(500).json({ error:error, msg: 'Failed to delete content: '+error });
     }
 });
 

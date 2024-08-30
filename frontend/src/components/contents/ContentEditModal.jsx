@@ -1,16 +1,17 @@
 import React from 'react';
 import ContentStore from "../../stores/ContentStore";
+import globalvars from './../../configs/globalVars';
 
 export default function AddContentModal({ showModal, setShowModal }) {
 
+  
+  const removeContent = ContentStore((state) => state.removeContent);
+  const updateContent = ContentStore((state) => state.updateContent);
+  const setFormData = ContentStore((state) => state.setFormData);
+  const resetFormData = ContentStore((state) => state.resetFormData);
+  const formData = ContentStore((state) => state.formData); 
+  
   if (!showModal) return null;
-
-   const removeContent = ContentStore((state) => state.removeContent);
-   const updateContent = ContentStore((state) => state.updateContent);
-   const setFormData = ContentStore((state) => state.setFormData);
-   const resetFormData = ContentStore((state) => state.resetFormData);
-   const formData = ContentStore((state) => state.formData); 
-
 
   
   //Adding Content logic starts here 
@@ -21,15 +22,15 @@ export default function AddContentModal({ showModal, setShowModal }) {
 
   const deleteContent = async (id) => {
 
-      const res = await fetch(`http://localhost:5000/api/contents/${id}`, {
+      const res = await fetch(`${globalvars.BACKEND_URL}/api/contents/${id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
         },
       }); 
       if(res.ok) {
-        //const result = await res.json();
-        removeContent(formData._id);
+        const result = await res.json();
+        if(result.status === "deletesuccess") removeContent(formData._id);
         setShowModal(false);
       }
        else {
@@ -42,7 +43,7 @@ export default function AddContentModal({ showModal, setShowModal }) {
     e.preventDefault();
     
     try {
-      const res = await fetch(`http://localhost:5000/api/contents/${formData._id}`, {
+      const res = await fetch(`${globalvars.BACKEND_URL}/api/contents/${formData._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -52,7 +53,6 @@ export default function AddContentModal({ showModal, setShowModal }) {
 
       if(res.ok) {
         const result = await res.json();
-        console.log(result);
         updateContent(formData);
         resetFormData();
       }

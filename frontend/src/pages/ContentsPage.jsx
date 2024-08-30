@@ -3,24 +3,36 @@ import AddContentModal from "../components/contents/ContentAddModal";
 import ContentCardList from "../components/contents/ContentCardList";
 import ContentStore from "../stores/ContentStore";
 import AddButton from "../components/AddButton";
+import globalvars from './../configs/globalVars';
 
 // Main page of reading wishlist
 // Contains the contents page layout.
 
-
 const ContentsPage = () => {
+  
+  //fetch contents from api endpoint and store in state
+  const contents = ContentStore((state) => state.contents);
+  const setContents = ContentStore((state) => state.setContents);
+  const resetFormData = ContentStore((state) => state.resetFormData);
+  
+  
+  useEffect(() => {
+    async function fetchContent() {
 
-    //fetch contents from api endpoint and store in state
-    const contents = ContentStore((state) => state.contents);
-    const setContents = ContentStore((state) => state.setContents);
+      try {
+        const res = await fetch(`${globalvars.BACKEND_URL}/api/contents`)
 
-
-    useEffect(() => {
-      async function fetchContent() {
-        const res = await fetch("http://localhost:5000/api/contents")
-          const data = await res.json();
-          data.length > 0 ? setContents(data) : setContents([]);
-          console.log("Got Data:"+ data+"--- Loaded Data: "+contents);
+        if(res.ok) {
+          const result = await res.json();
+          result.status == 'datafound' ? setContents(result.contents) : setContents([]);
+          console.log(result);
+        }
+         else {
+          console.error('Failed to get content');
+        }
+      } catch (error) {
+        console.error('An error occurred while getting contents:', error);
+      }
       }
       fetchContent();
     },[setContents]);
@@ -70,7 +82,7 @@ const ContentsPage = () => {
         <p className="text-2xl font-regular mb-5">
           Get started by adding your first wishlist item.
         </p>
-        <AddButton text={"Start Now"}  isIcon={false}/>
+        <AddButton text={"Start Now"} handleClick={() => setShowModal(true)}  isIcon={false}/>
       </div>
     ) : <ContentCardList contents={contents} /> }
     </div>

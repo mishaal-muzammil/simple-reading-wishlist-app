@@ -1,57 +1,51 @@
 import React from "react";
 import ContentStore from "../../stores/ContentStore";
+import globalvars from "./../../configs/globalVars";
 
 export default function AddContentModal({ showModal, setShowModal }) {
-  
   const addContent = ContentStore((state) => state.addContent);
   const setFormData = ContentStore((state) => state.setFormData);
   const resetFormData = ContentStore((state) => state.resetFormData);
-  const formData = ContentStore((state) => state.formData); 
-  
-  if (showModal){
-    console.log(formData);
-  }else {
-    return null;
-  }
+  const formData = ContentStore((state) => state.formData);
 
-  
-  //Adding Content logic starts here 
+  if (!showModal) return null;
+
+  //Adding Content logic starts here
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData({...formData, [name]: type === 'checkbox'  ? checked : value });
+    setFormData({ ...formData, [name]: type === "checkbox" ? checked : value });
   };
 
   const handleSubmit = async (e) => {
-
     e.preventDefault();
-    
+
     try {
-      const res = await fetch('http://localhost:5000/api/contents/', {
-        method: 'POST',
+      const res = await fetch(`${globalvars.BACKEND_URL}/api/contents/`, {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
 
-      if(res.ok) {
-        const newContent = await res.json();
-        addContent(newContent);
+      if (res.ok) {
+        const result = await res.json();
+        console.log(result);
+        result.status === "postsuccess"  ? addContent(result.content) : setContents([]);
         resetFormData();
-      }
-       else {
-        console.error('Failed to add content');
+      } else {
+        console.error("Failed to add content");
       }
     } catch (error) {
-      console.error('An error occurred while adding content:', error);
+      console.error("An error occurred while adding content:", error);
     }
-    setShowModal(false); 
+    setShowModal(false);
   };
 
   // Layout and UI for Add Contents Modal
   return (
     <>
-       <div className="fixed inset-0 z-40 bg-black opacity-50"></div>
+      <div className="fixed inset-0 z-40 bg-black opacity-50"></div>
       <div className="fixed inset-0 z-50 flex justify-center sm:items-center overflow-scroll max-md:shadow-lg max-md:bg-white">
         <div className="sm:relative md:max-w-lg w-full bg-white text-gray-800 sm:rounded-2xl md:border md:shadow-lg sm:mx-4 sm:mx-0">
           <div className="p-6 pb-1">
@@ -127,9 +121,9 @@ export default function AddContentModal({ showModal, setShowModal }) {
                     Source URL:{" "}
                   </p>
                   <input
-                  name="sourceUrl"
-                  value={formData.sourceUrl}
-                  onChange={handleChange}
+                    name="sourceUrl"
+                    value={formData.sourceUrl}
+                    onChange={handleChange}
                     className="w-full rounded-md border bg-white py-2 px-2 outline-none ring-accent focus:ring-1"
                     type="text"
                     placeholder="Web Address of the the source, e.g. https://example.com"
@@ -141,8 +135,8 @@ export default function AddContentModal({ showModal, setShowModal }) {
                 </p>
                 <div className="rounded-lg border bg-white p-1 mb-4">
                   <div className="flex gap-x-4">
-                   {/* Completed Option */}
-                   <div className="relative flex w-56 items-center justify-center rounded-lg bg-white px-4 py-2 font-semibold text-foreground cursor-pointer">
+                    {/* Completed Option */}
+                    <div className="relative flex w-56 items-center justify-center rounded-lg bg-white px-4 py-2 font-semibold text-foreground cursor-pointer">
                       <input
                         className="peer hidden"
                         type="radio"
@@ -168,7 +162,7 @@ export default function AddContentModal({ showModal, setShowModal }) {
                         type="radio"
                         name="readStatus"
                         value="reading"
-                        checked={formData.readStatus === 'reading'}
+                        checked={formData.readStatus === "reading"}
                         onChange={handleChange}
                         id="reading"
                       />
@@ -185,7 +179,7 @@ export default function AddContentModal({ showModal, setShowModal }) {
                         type="radio"
                         name="readStatus"
                         value="notStarted"
-                        checked={formData.readStatus === 'notStarted'}
+                        checked={formData.readStatus === "notStarted"}
                         onChange={handleChange}
                         id="notStarted"
                       />
@@ -193,7 +187,9 @@ export default function AddContentModal({ showModal, setShowModal }) {
                         htmlFor="notStarted"
                         className="peer-checked:bg-[#E4E3EE] hover:bg-[#EDECF4] absolute inset-0 h-full w-full cursor-pointer rounded-lg transition-colors duration-200 ease-in-out"
                       ></label>
-                      <span className="pointer-events-none z-10">Not Started</span>
+                      <span className="pointer-events-none z-10">
+                        Not Started
+                      </span>
                     </div>
                   </div>
                 </div>
